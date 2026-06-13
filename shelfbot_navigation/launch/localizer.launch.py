@@ -12,7 +12,7 @@ def generate_launch_description():
 
     map_yaml_path_arg = DeclareLaunchArgument(
         'map_yaml_path',
-        default_value='/workspaces/isaac_ros-dev/src/slam_cartographer/maps/map.yaml',
+        default_value='/workspaces/isaac_ros-dev/src/shelfbot_navigation/maps/map.yaml',
         description='Path to the map YAML file'
     )
 
