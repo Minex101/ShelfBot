@@ -1,6 +1,6 @@
 # 🏭 ShelfBot — Autonomous Warehouse Forklift
 
-> Autonomous forklift robot for pick and place operations on warehouse shelves, built on ROS 2 and NVIDIA Isaac ROS.
+Autonomous forklift robot for pick and place operations on warehouse shelves, built on ROS 2 and NVIDIA Isaac ROS.
 
 ---
 
