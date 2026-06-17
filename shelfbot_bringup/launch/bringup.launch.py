@@ -39,8 +39,25 @@ def generate_launch_description():
         output='screen'
     )
 
+    # Launch the A* path planner node
+    GlobalPlanner = Node(
+        package='shelfbot_navigation',
+        executable='path_planner',
+        name='a_star_planner',
+        output='screen'
+    )
+
+    LocalPlanner = Node(
+        package='shelfbot_navigation',
+        executable='path_follower',
+        name='local_planner',
+        output='screen'
+    )
+
     return LaunchDescription([
         localizer,
         map_server,
         lifecycle_manager,
+        GlobalPlanner,
+        LocalPlanner
     ])
