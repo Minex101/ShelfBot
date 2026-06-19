@@ -34,9 +34,8 @@ class ArucoDetector(Node):
             10
         )
 
-        aruco_dict = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_4X4_50) # Select the ArUco dictionary to use
-        params = cv2.aruco.DetectorParameters() # Create the detector parameters
-        self.detector = cv2.aruco.ArucoDetector(aruco_dict, params) # Create the ArUco detector with the specified dictionary and parameters
+        self.aruco_dict = cv2.aruco.Dictionary_get(cv2.aruco.DICT_4X4_50) # Select the ArUco dictionary to use
+        self.aruco_params = cv2.aruco.DetectorParameters_create() # Create the ArUco detector parameters
 
         self.bridge = CvBridge()
         self.camera_matrix = None
@@ -46,6 +45,7 @@ class ArucoDetector(Node):
     def camera_info_callback(self, msg):
         self.camera_matrix = np.array(msg.k).reshape((3, 3))
         self.dist_coeffs = np.array(msg.d)
+        
 
     def image_callback(self, msg):
         if self.camera_matrix is None:
@@ -54,8 +54,8 @@ class ArucoDetector(Node):
         
         frame = self.bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8') # Convert the ROS frame message to an OpenCV frame
         gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY) # Convert the frame to grayscale
-        corners, ids, _ = self.detector.detectMarkers(gray_frame) # Detect the ArUco markers in the frame
-        
+        corners, ids, _ = cv2.aruco.detectMarkers(gray_frame, self.aruco_dict, parameters=self.aruco_params) # Detect the ArUco markers in the frame
+        self.get_logger().info(f'Detected IDs: {ids}', throttle_duration_sec=1.0)
         if ids is None:
             return  # No markers detected
 
@@ -125,8 +125,6 @@ def main(args=None):
     rclpy.init(args=args)
     aruco_detector = ArucoDetector()
     rclpy.spin(aruco_detector)
-    aruco_detector.destroy_node()
-    rclpy.shutdown()
 
 if __name__ == '__main__':
     main()
