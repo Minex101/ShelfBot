@@ -28,6 +28,8 @@ setup(
     },
     entry_points={
         'console_scripts': [
+            'path_planner = shelfbot_navigation.a_star_planner:main',
+            'path_follower = shelfbot_navigation.path_follower:main',
         ],
     },
 )

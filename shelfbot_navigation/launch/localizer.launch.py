@@ -24,10 +24,11 @@ def generate_launch_description():
             'loc_result_frame': 'map',
             'map_yaml_path': map_yaml_path,
             'image': 'map.png',
-            'resolution': 0.05,
-            'origin': [-11.975, -17.975, 0.0],
+            'resolution': 0.025,
+            'origin': [-11.9875, -18.03750114440918, 0.0000],
             'occupied_thresh': 0.65,
             'min_scan_fov_degrees': 100.0,
+            'max_error': 0.45,
         }]
     )
 

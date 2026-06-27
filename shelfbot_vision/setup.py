@@ -1,8 +1,6 @@
 from setuptools import find_packages, setup
-import os
-from glob import glob
 
-package_name = 'shelfbot_bringup'
+package_name = 'shelfbot_vision'
 
 setup(
     name=package_name,
@@ -12,7 +10,6 @@ setup(
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
-        ('share/' + package_name + '/launch', glob('launch/*.py')),
     ],
     install_requires=['setuptools'],
     zip_safe=True,
@@ -27,7 +24,6 @@ setup(
     },
     entry_points={
         'console_scripts': [
-            'mission_manager = shelfbot_bringup.mission_manager:main',
         ],
     },
 )
