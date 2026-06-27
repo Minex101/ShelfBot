@@ -1,7 +1,5 @@
 from setuptools import find_packages, setup
-
 package_name = 'shelfbot_vision'
-
 setup(
     name=package_name,
     version='0.0.0',
@@ -24,6 +22,7 @@ setup(
     },
     entry_points={
         'console_scripts': [
+            'aruco_detector = shelfbot_vision.aruco_detector:main',
         ],
     },
 )

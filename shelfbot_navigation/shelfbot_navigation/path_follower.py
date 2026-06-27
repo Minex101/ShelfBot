@@ -17,7 +17,6 @@ class PurePursuitMotionPlanner(Node):
     def __init__(self):
         super().__init__('pure_pursuit')
 
-        # Path subscriber to get the planned path from the A* planner
         self.path_subscriber = self.create_subscription(
             Path, 
             'planned_path', 
@@ -25,7 +24,6 @@ class PurePursuitMotionPlanner(Node):
             10
             )
         
-        # Localization subscriber to get the robot's current position and orientation
         self.localization_subscriber = self.create_subscription(
             PoseWithCovarianceStamped, 
             'localization_result', 
@@ -33,7 +31,6 @@ class PurePursuitMotionPlanner(Node):
             10
             )
 
-        # Publisher to send velocity commands to the robot
         self.cmd_vel_publisher = self.create_publisher(
             Twist, 
             'cmd_vel', 
@@ -48,8 +45,6 @@ class PurePursuitMotionPlanner(Node):
 
         self.timer = self.create_timer(0.1, self.control_loop)
 
-    # -- Callback functions for subscribers --
-
     def path_callback(self, msg):
         self.cx = [pose.pose.position.x for pose in msg.poses]
         self.cy = [pose.pose.position.y for pose in msg.poses]
@@ -60,32 +55,24 @@ class PurePursuitMotionPlanner(Node):
         q = msg.pose.pose.orientation
         self.current_yaw = math.atan2(2 * (q.w * q.z + q.x * q.y), 1 - 2 * (q.y * q.y + q.z * q.z))
 
-    # -- Control loop for path following --
-    
     def calc_distance(self, px, py):
-
         dx = self.current_position[0] - px
         dy = self.current_position[1] - py
         return math.hypot(dx, dy)
 
     def search_target_index(self):
-
         x, y = self.current_position
-    
-        # find nearest waypoint
+
         dx = [x - icx for icx in self.cx]
         dy = [y - icy for icy in self.cy]
         d = np.hypot(dx, dy)
         ind = int(np.argmin(d))
-        
-        # walk forward until outside lookahead circle
-        while self.calc_distance(self.cx[ind], self.cy[ind]) < Lf:
 
+        while self.calc_distance(self.cx[ind], self.cy[ind]) < Lf:
             if ind + 1 >= len(self.cx):
                 break
             ind += 1
-        
-        # interpolate between point inside and outside circle
+
         if ind > 0:
             p1x, p1y = self.cx[ind-1], self.cy[ind-1]
             p2x, p2y = self.cx[ind], self.cy[ind]
@@ -94,19 +81,16 @@ class PurePursuitMotionPlanner(Node):
             t = (Lf - d1) / (d2 - d1)
             tx = p1x + t * (p2x - p1x)
             ty = p1y + t * (p2y - p1y)
-
         else:
             tx = self.cx[ind]
             ty = self.cy[ind]
-        
+
         return tx, ty
 
     def control_loop(self):
-
         if not self.cx or self.current_position is None or self.current_yaw is None:
             return
 
-        # Check if goal reached
         dx = self.cx[-1] - self.current_position[0]
         dy = self.cy[-1] - self.current_position[1]
 
@@ -119,19 +103,15 @@ class PurePursuitMotionPlanner(Node):
 
         tx, ty = self.search_target_index()
 
-        # Alpha is angle between heading and lookahead point
         alpha = math.atan2(ty - self.current_position[1], tx - self.current_position[0]) - self.current_yaw
 
-        # Normalize
         while alpha > math.pi:
             alpha -= 2 * math.pi
         while alpha < -math.pi:
             alpha += 2 * math.pi
 
-        # Pure pursuit steering
         delta = math.atan2(2.0 * WB * math.sin(alpha) / Lf, 1.0)
 
-        # Speed control
         self.current_speed = TARGET_SPEED
 
         twist = Twist()

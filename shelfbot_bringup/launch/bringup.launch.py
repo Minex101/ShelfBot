@@ -4,8 +4,8 @@ from launch.substitutions import PathJoinSubstitution
 from launch_ros.substitutions import FindPackageShare
 from launch_ros.actions import Node
 
-def generate_launch_description():
 
+def generate_launch_description():
     # Launch the shelfbot_localization package
     localizer = IncludeLaunchDescription(
         PathJoinSubstitution([
@@ -55,16 +55,17 @@ def generate_launch_description():
     )
 
     MissionManager = Node(
-    package='shelfbot_bringup',
-    executable='mission_manager',
-    name='mission_manager',
-    output='screen'
-)
+        package='shelfbot_bringup',
+        executable='mission_manager',
+        name='mission_manager',
+        output='screen'
+    )
 
     return LaunchDescription([
         localizer,
         map_server,
         lifecycle_manager,
         GlobalPlanner,
-        LocalPlanner
+        LocalPlanner,
+        MissionManager
     ])
