@@ -30,6 +30,8 @@ setup(
         'console_scripts': [
             'path_planner = shelfbot_navigation.a_star_planner:main',
             'path_follower = shelfbot_navigation.path_follower:main',
+            'fork_docker = shelfbot_navigation.fork_docker:main',
+            'fork_mover = shelfbot_navigation.fork_mover:main'
         ],
     },
 )

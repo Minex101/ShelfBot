@@ -55,7 +55,6 @@ class ArucoDetector(Node):
         frame = self.bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8') # Convert the ROS frame message to an OpenCV frame
         gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY) # Convert the frame to grayscale
         corners, ids, _ = cv2.aruco.detectMarkers(gray_frame, self.aruco_dict, parameters=self.aruco_params) # Detect the ArUco markers in the frame
-        self.get_logger().info(f'Detected IDs: {ids}', throttle_duration_sec=1.0)
         if ids is None:
             return  # No markers detected
 

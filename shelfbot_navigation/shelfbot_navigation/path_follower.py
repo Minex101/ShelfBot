@@ -5,6 +5,7 @@ import numpy as np
 
 from nav_msgs.msg import Path
 from geometry_msgs.msg import Twist, PoseWithCovarianceStamped
+from std_msgs.msg import Bool
 
 # Parameters
 Lf = 2              # base lookahead distance
@@ -17,6 +18,7 @@ class PurePursuitMotionPlanner(Node):
     def __init__(self):
         super().__init__('pure_pursuit')
 
+        # Subscribe to the path
         self.path_subscriber = self.create_subscription(
             Path, 
             'planned_path', 
@@ -24,6 +26,7 @@ class PurePursuitMotionPlanner(Node):
             10
             )
         
+        # Subscribe to recieve current pose
         self.localization_subscriber = self.create_subscription(
             PoseWithCovarianceStamped, 
             'localization_result', 
@@ -31,11 +34,23 @@ class PurePursuitMotionPlanner(Node):
             10
             )
 
+        # Publish to control the robot
         self.cmd_vel_publisher = self.create_publisher(
             Twist, 
             'cmd_vel', 
             10
             )
+        
+        # Publish robot goal status
+
+        self.goal_status_publisher = self.create_publisher(
+            Bool,
+            'status/navigation',
+            10
+        )
+
+        self.goal_reached = Bool()
+        self.goal_reached.data = False
 
         self.cx = []
         self.cy = []
@@ -48,6 +63,9 @@ class PurePursuitMotionPlanner(Node):
     def path_callback(self, msg):
         self.cx = [pose.pose.position.x for pose in msg.poses]
         self.cy = [pose.pose.position.y for pose in msg.poses]
+
+        self.goal_reached.data = False
+        
         self.get_logger().info(f'Got path with {len(self.cx)} waypoints')
 
     def localization_callback(self, msg):
@@ -81,6 +99,7 @@ class PurePursuitMotionPlanner(Node):
             t = (Lf - d1) / (d2 - d1)
             tx = p1x + t * (p2x - p1x)
             ty = p1y + t * (p2y - p1y)
+
         else:
             tx = self.cx[ind]
             ty = self.cy[ind]
@@ -97,6 +116,8 @@ class PurePursuitMotionPlanner(Node):
         if math.hypot(dx, dy) < 0.3:
             self.stop()
             self.get_logger().info('☑️ Goal reached!')
+            self.goal_reached.data = True
+            self.goal_status_publisher.publish(self.goal_reached)
             self.cx = []
             self.cy = []
             return

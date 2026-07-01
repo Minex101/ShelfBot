@@ -54,6 +54,27 @@ def generate_launch_description():
         output='screen'
     )
 
+    ForkLiftMover = Node(
+        package='shelfbot_navigation',
+        executable='fork_mover',
+        name='fork_mover',
+        output='screen'
+    )
+
+    AruCoDetector = Node(
+        package='shelfbot_vision',
+        executable='aruco_detector',
+        name='aruco_detector',
+        output='screen'
+    )
+
+    ForkDocker = Node(
+        package='shelfbot_navigation',
+        executable='fork_docker',
+        name='fork_docker',
+        output='screen'
+    )
+
     MissionManager = Node(
         package='shelfbot_bringup',
         executable='mission_manager',
@@ -67,5 +88,8 @@ def generate_launch_description():
         lifecycle_manager,
         GlobalPlanner,
         LocalPlanner,
+        ForkLiftMover,
+        AruCoDetector,
+        ForkDocker,
         MissionManager
     ])

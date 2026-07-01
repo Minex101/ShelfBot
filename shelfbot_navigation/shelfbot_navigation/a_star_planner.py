@@ -39,7 +39,11 @@ class AStarPlanner(Node):
         )
 
         # Publisher to publish the planned path
-        self.path_publisher = self.create_publisher(Path, 'planned_path', 10)
+        self.path_publisher = self.create_publisher(
+            Path, 
+            'planned_path', 
+            10
+            )
 
         self.current_position = None
         self.map_data = None
@@ -53,7 +57,6 @@ class AStarPlanner(Node):
 
     def localization_callback(self, msg):
         self.current_position = (msg.pose.pose.position.x, msg.pose.pose.position.y)
-        self.get_logger().info(f'📍 Current Position: {self.current_position}')
 
     def map_callback(self, msg):
         self.map_width = msg.info.width
